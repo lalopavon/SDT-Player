@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <!-- ExoPlayer default controls -->
+    <LinearLayout
+        android:id="@+id/exo_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal|bottom">
+
+        <com.google.android.exoplayer2.ui.DefaultTimeBar
+            android:id="@+id/exo_progress"
+            android:layout_width="match_parent"
+            android:layout_height="26dp"
+            android:layout_marginBottom="4dp"
+            app:played_color="@color/exo_played_color"
+            app:scrubber_color="@color/exo_scrubber_color"
+            app:buffered_color="@color/exo_buffered_color"
+            app:unplayed_color="@color/exo_unplayed_color"
+            app:ad_marker_color="@color/exo_ad_marker_color"
+            app:played_ad_marker_color="@color/exo_played_ad_marker_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/exo_prev"
+                style="@style/ExoMediaButton.Previous" />
+
+            <ImageButton
+                android:id="@+id/exo_rew"
+                style="@style/ExoMediaButton.Rewind" />
+
+            <ImageButton
+                android:id="@+id/exo_play"
+                style="@style/ExoMediaButton.Play" />
+
+            <ImageButton
+                android:id="@+id/exo_pause"
+                style="@style/ExoMediaButton.Pause" />
+
+            <ImageButton
+                android:id="@+id/exo_ffwd"
+                style="@style/ExoMediaButton.FastForward" />
+
+            <ImageButton
+                android:id="@+id/exo_next"
+                style="@style/ExoMediaButton.Next" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Custom buttons for fullscreen and volume -->
+    <ImageButton
+        android:id="@+id/exo_fullscreen"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/exo_controls_fullscreen_description"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_fullscreen" />
+
+    <ImageButton
+        android:id="@+id/exo_volume"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="start|bottom"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/exo_controls_volume_description"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_volume" />
+
+</FrameLayout>

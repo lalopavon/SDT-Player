@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@drawable/channel_background"
+    android:layout_marginBottom="8dp"> <!-- Agrega separación entre canales -->
+
+    <TextView
+        android:id="@+id/channel_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:layout_marginEnd="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:gravity="center_vertical" /> <!-- Alineación vertical centrada -->
+
+    <TextView
+        android:id="@+id/channel_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="https://example.com/stream.m3u8"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:gravity="center_vertical" /> <!-- Alineación vertical centrada -->
+
+    <Button
+        android:id="@+id/delete_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:background="@drawable/button_selector"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        android:gravity="center_vertical" /> <!-- Alineación vertical centrada -->
+
+</LinearLayout>

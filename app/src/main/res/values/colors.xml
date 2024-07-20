@@ -1,0 +1,26 @@
+<resources>
+    <color name="sdt_blue">#005BAC</color>
+    <color name="sdt_black">#000000</color>
+    <color name="sdt_background">#003EA5</color>
+    <color name="colorPrimary">#005BAC</color>
+    <color name="colorPrimaryDark">#004080</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="background_gradient_start">#FF5733</color> <!-- Color de ejemplo -->
+    <color name="background_gradient_end">#C70039</color> <!-- Color de ejemplo -->
+    <color name="selected_background">#FF4081</color>
+    <color name="fastlane_background">#00FF00</color> <!-- Cambia a los colores que desees -->
+    <color name="search_opaque">#FFFFFF</color> <!-- Cambia a los colores que desees -->
+    <color name="default_background">#123456</color> <!-- Cambia a los colores que desees -->
+
+    <!-- Add these colors -->
+    <color name="exo_played_color">#FF0000</color>
+    <color name="exo_scrubber_color">#00FF00</color>
+    <color name="exo_buffered_color">#0000FF</color>
+    <color name="exo_unplayed_color">#CCCCCC</color>
+    <color name="exo_ad_marker_color">#FFFF00</color>
+    <color name="exo_played_ad_marker_color">#FF00FF</color>
+
+    <!-- New colors for channels -->
+    <color name="channel_background">#303F9F</color>
+    <color name="channel_selected_background">#FF4081</color>
+</resources>
