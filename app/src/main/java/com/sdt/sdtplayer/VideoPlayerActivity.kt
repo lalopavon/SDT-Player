@@ -84,6 +84,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         adapter = UrlAdapter(channels, false) { position ->
             currentChannelIndex = position
             adapter.setSelectedPosition(currentChannelIndex)
+            // Desplazar la lista de canales para mantener la selección visible
+            channelList.scrollToPosition(currentChannelIndex)
         }
         channelList.adapter = adapter
     }
@@ -151,6 +153,9 @@ class VideoPlayerActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
+            // Restablecer la selección de canales al ocultar la guía
+            adapter.setSelectedPosition(currentChannelIndex)
+            channelList.scrollToPosition(currentChannelIndex)
         }
     }
 
@@ -158,6 +163,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         previousChannelIndex = currentChannelIndex
         currentChannelIndex = (currentChannelIndex + increment + channels.size) % channels.size
         adapter.setSelectedPosition(currentChannelIndex)
+        // Desplazar la lista de canales para mantener la selección visible
+        channelList.scrollToPosition(currentChannelIndex)
         showChannelList()
     }
 
@@ -217,6 +224,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                     if (isChannelListVisible) {
                         hideChannelList()
                         adapter.setSelectedPosition(previousChannelIndex) // Regresar al canal actualmente reproduciendo
+                        channelList.scrollToPosition(previousChannelIndex)
                         return true
                     }
                 }
