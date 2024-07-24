@@ -11,15 +11,15 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.ui.PlayerView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 
 class VideoPlayerActivity : AppCompatActivity() {
 
-    private lateinit var player: SimpleExoPlayer
+    private lateinit var player: ExoPlayer
     private lateinit var playerView: PlayerView
     private lateinit var channelList: RecyclerView
     private lateinit var loadingSpinner: ProgressBar
@@ -58,20 +58,18 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun setupPlayer() {
-        player = SimpleExoPlayer.Builder(this).build()
+        player = ExoPlayer.Builder(this).build()
         playerView.player = player
-        playerView.resizeMode = com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
+        playerView.resizeMode = androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
         player.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                super.onPlayerError(error)
                 showErrorAndReturn()
             }
 
-            override fun onPlaybackStateChanged(state: Int) {
-                super.onPlaybackStateChanged(state)
-                if (state == Player.STATE_READY || state == Player.STATE_ENDED) {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY || playbackState == Player.STATE_ENDED) {
                     loadingSpinner.visibility = View.GONE
-                } else if (state == Player.STATE_BUFFERING) {
+                } else if (playbackState == Player.STATE_BUFFERING) {
                     loadingSpinner.visibility = View.VISIBLE
                 }
             }

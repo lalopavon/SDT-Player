@@ -39,5 +39,6 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
     implementation(libs.exoplayer)
+    implementation(libs.exoplayer.ui)
     implementation(libs.material)
 }
