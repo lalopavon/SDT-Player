@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/sdt_blue"
+        android:background="@android:color/darker_gray"
         android:padding="16dp">
 
         <ImageView
@@ -51,7 +51,7 @@
             android:id="@+id/channel_list"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:background="@android:color/darker_gray"
+            android:background="@color/sdt_blue"
             android:padding="8dp" />
     </LinearLayout>
 

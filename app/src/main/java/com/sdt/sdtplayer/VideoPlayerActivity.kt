@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -25,17 +26,16 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var loadingSpinner: ProgressBar
     private lateinit var topBar: View
     private val channels = mutableListOf<String>()
-    private lateinit var adapter: UrlAdapter  // Cambia ChannelAdapter a UrlAdapter
+    private lateinit var adapter: UrlAdapter
     private var currentChannelIndex = 0
+    private var previousChannelIndex = 0
 
     private val hideChannelListHandler = Handler(Looper.getMainLooper())
     private val hideChannelListRunnable = Runnable {
-        channelList.visibility = View.GONE
-        playerView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
+        hideChannelList()
     }
+
+    private var isChannelListVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +49,13 @@ class VideoPlayerActivity : AppCompatActivity() {
         // Ocultar la barra superior después de 5 segundos
         Handler(Looper.getMainLooper()).postDelayed({
             topBar.visibility = View.GONE
-        }, 5000) // 5000 milliseconds = 5 seconds
+        }, 5000)
 
         setupPlayer()
         setupChannelList()
         handleIntent()
+
+        // Ocultar la guía automáticamente después de unos segundos al iniciar la actividad
         hideChannelListAfterDelay()
     }
 
@@ -69,6 +71,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY || playbackState == Player.STATE_ENDED) {
                     loadingSpinner.visibility = View.GONE
+                    hideChannelListAfterDelay() // Ocultar la guía al comenzar la reproducción
                 } else if (playbackState == Player.STATE_BUFFERING) {
                     loadingSpinner.visibility = View.VISIBLE
                 }
@@ -78,9 +81,9 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private fun setupChannelList() {
         channelList.layoutManager = LinearLayoutManager(this)
-        // Usar UrlAdapter en lugar de ChannelAdapter y pasar false para no mostrar el botón de eliminación
         adapter = UrlAdapter(channels, false) { position ->
-            changeChannel(position - currentChannelIndex)
+            currentChannelIndex = position
+            adapter.setSelectedPosition(currentChannelIndex)
         }
         channelList.adapter = adapter
     }
@@ -104,6 +107,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         player.setMediaItem(mediaItem)
         player.prepare()
         player.play()
+        hideChannelListAfterDelay()
     }
 
     private fun showErrorAndReturn() {
@@ -122,19 +126,37 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun showChannelList() {
-        channelList.visibility = View.VISIBLE
-        playerView.layoutParams = LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        ).apply {
-            weight = 1f
+        if (!isChannelListVisible) {
+            isChannelListVisible = true
+            channelList.visibility = View.VISIBLE
+            channelList.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right))
+            playerView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_out))
+            playerView.layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            ).apply {
+                weight = 1f
+            }
         }
         hideChannelListAfterDelay()
     }
 
+    private fun hideChannelList() {
+        if (isChannelListVisible) {
+            isChannelListVisible = false
+            channelList.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right))
+            playerView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in))
+            channelList.visibility = View.GONE
+            playerView.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+    }
+
     private fun changeChannel(increment: Int) {
+        previousChannelIndex = currentChannelIndex
         currentChannelIndex = (currentChannelIndex + increment + channels.size) % channels.size
-        playChannel(channels[currentChannelIndex])
         adapter.setSelectedPosition(currentChannelIndex)
         showChannelList()
     }
@@ -148,39 +170,55 @@ class VideoPlayerActivity : AppCompatActivity() {
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                    // Seleccionar el canal actual
-                    playChannel(channels[currentChannelIndex])
+                    if (isChannelListVisible) {
+                        // Reproducir el canal seleccionado
+                        playChannel(channels[currentChannelIndex])
+                    } else {
+                        // Toggle play/pause
+                        if (player.isPlaying) {
+                            player.pause()
+                        } else {
+                            player.play()
+                        }
+                    }
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    // Rewind 10 seconds
+                    // Rebobinar 10 segundos
                     player.seekTo(player.currentPosition - 10000)
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    // Fast forward 10 seconds
+                    // Adelantar 10 segundos
                     player.seekTo(player.currentPosition + 10000)
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_UP -> {
-                    // Navigate up in the channel list
+                    // Navegar hacia arriba en la lista de canales
                     changeChannel(-1)
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    // Navigate down in the channel list
+                    // Navegar hacia abajo en la lista de canales
                     changeChannel(1)
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_UP -> {
-                    // Change to next channel
+                    // Cambiar al siguiente canal
                     changeChannel(1)
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_DOWN -> {
-                    // Change to previous channel
+                    // Cambiar al canal anterior
                     changeChannel(-1)
                     return true
+                }
+                KeyEvent.KEYCODE_BACK -> {
+                    if (isChannelListVisible) {
+                        hideChannelList()
+                        adapter.setSelectedPosition(previousChannelIndex) // Regresar al canal actualmente reproduciendo
+                        return true
+                    }
                 }
             }
         }
