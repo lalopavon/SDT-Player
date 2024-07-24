@@ -79,7 +79,9 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun setupChannelList() {
         channelList.layoutManager = LinearLayoutManager(this)
         // Usar UrlAdapter en lugar de ChannelAdapter y pasar false para no mostrar el botón de eliminación
-        adapter = UrlAdapter(channels, false) { }
+        adapter = UrlAdapter(channels, false) { position ->
+            changeChannel(position - currentChannelIndex)
+        }
         channelList.adapter = adapter
     }
 
@@ -146,12 +148,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                    // Toggle play/pause
-                    if (player.isPlaying) {
-                        player.pause()
-                    } else {
-                        player.play()
-                    }
+                    // Seleccionar el canal actual
+                    playChannel(channels[currentChannelIndex])
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -164,9 +162,14 @@ class VideoPlayerActivity : AppCompatActivity() {
                     player.seekTo(player.currentPosition + 10000)
                     return true
                 }
-                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    // Show channel list
-                    showChannelList()
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    // Navigate up in the channel list
+                    changeChannel(-1)
+                    return true
+                }
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    // Navigate down in the channel list
+                    changeChannel(1)
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_UP -> {
