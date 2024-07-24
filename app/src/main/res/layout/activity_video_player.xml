@@ -38,7 +38,7 @@
         android:orientation="horizontal"
         android:layout_gravity="center">
 
-        <com.google.android.exoplayer2.ui.PlayerView
+        <androidx.media3.ui.PlayerView
             android:id="@+id/player_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"

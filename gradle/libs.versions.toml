@@ -4,7 +4,7 @@ kotlin = "1.9.0"
 coreKtx = "1.13.1"
 leanback = "1.0.0"
 glide = "4.11.0"
-exoplayer = "1.3.1"  # Actualiza a la nueva versión de Media3 ExoPlayer
+exoplayer = "1.3.1"  # Actualiza a la versión de Media3 ExoPlayer
 material = "1.12.0"
 
 [libraries]
@@ -14,6 +14,7 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoplayer" }
 exoplayer-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "exoplayer" }
+exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "exoplayer" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 
 [plugins]
