@@ -30,8 +30,8 @@ class UrlAdapter(
         val url = urlList[position]
         holder.urlText.text = url
         holder.channelNumber.text = (position + 1).toString()
-        holder.itemView.isSelected = (selectedPosition == position)
 
+        // Actualiza la apariencia según la posición seleccionada
         holder.itemView.setBackgroundResource(
             if (selectedPosition == position) R.drawable.channel_selected_background
             else R.drawable.channel_background
