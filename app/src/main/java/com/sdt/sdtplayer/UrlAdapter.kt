@@ -64,4 +64,8 @@ class UrlAdapter(
         selectedPosition = position
         notifyItemChanged(selectedPosition)
     }
+
+    fun getSelectedPosition(): Int {
+        return selectedPosition
+    }
 }

@@ -28,7 +28,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     private val channels = mutableListOf<String>()
     private lateinit var adapter: UrlAdapter
     private var currentChannelIndex = 0
-    private var previousChannelIndex = 0
 
     private val hideChannelListHandler = Handler(Looper.getMainLooper())
     private val hideChannelListRunnable = Runnable {
@@ -55,6 +54,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         setupChannelList()
         handleIntent()
 
+        // Mostrar la guía al iniciar la actividad
+        showChannelList()
         // Ocultar la guía automáticamente después de unos segundos al iniciar la actividad
         hideChannelListAfterDelay()
     }
@@ -140,7 +141,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 weight = 1f
             }
         }
-        hideChannelListAfterDelay()
+        hideChannelListAfterDelay() // Ocultar la guía después de unos segundos
     }
 
     private fun hideChannelList() {
@@ -153,17 +154,16 @@ class VideoPlayerActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
-            // Restablecer la selección de canales al ocultar la guía
-            adapter.setSelectedPosition(currentChannelIndex)
-            channelList.scrollToPosition(currentChannelIndex)
         }
     }
 
     private fun changeChannel(increment: Int) {
-        previousChannelIndex = currentChannelIndex
         currentChannelIndex = (currentChannelIndex + increment + channels.size) % channels.size
+        playChannel(channels[currentChannelIndex])
+    }
+
+    private fun selectChannel() {
         adapter.setSelectedPosition(currentChannelIndex)
-        // Desplazar la lista de canales para mantener la selección visible
         channelList.scrollToPosition(currentChannelIndex)
         showChannelList()
     }
@@ -179,14 +179,11 @@ class VideoPlayerActivity : AppCompatActivity() {
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
                     if (isChannelListVisible) {
                         // Reproducir el canal seleccionado
-                        playChannel(channels[currentChannelIndex])
+                        playChannel(channels[adapter.getSelectedPosition()])
+                        hideChannelList()
                     } else {
-                        // Toggle play/pause
-                        if (player.isPlaying) {
-                            player.pause()
-                        } else {
-                            player.play()
-                        }
+                        // Mostrar la guía de programación
+                        showChannelList()
                     }
                     return true
                 }
@@ -201,13 +198,25 @@ class VideoPlayerActivity : AppCompatActivity() {
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_UP -> {
-                    // Navegar hacia arriba en la lista de canales
-                    changeChannel(-1)
+                    if (isChannelListVisible) {
+                        // Navegar hacia arriba en la lista de canales
+                        adapter.setSelectedPosition((adapter.getSelectedPosition() - 1 + channels.size) % channels.size)
+                        channelList.scrollToPosition(adapter.getSelectedPosition())
+                    } else {
+                        // Cambiar al canal anterior
+                        changeChannel(-1)
+                    }
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    // Navegar hacia abajo en la lista de canales
-                    changeChannel(1)
+                    if (isChannelListVisible) {
+                        // Navegar hacia abajo en la lista de canales
+                        adapter.setSelectedPosition((adapter.getSelectedPosition() + 1) % channels.size)
+                        channelList.scrollToPosition(adapter.getSelectedPosition())
+                    } else {
+                        // Cambiar al siguiente canal
+                        changeChannel(1)
+                    }
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_UP -> {
@@ -219,14 +228,6 @@ class VideoPlayerActivity : AppCompatActivity() {
                     // Cambiar al canal anterior
                     changeChannel(-1)
                     return true
-                }
-                KeyEvent.KEYCODE_BACK -> {
-                    if (isChannelListVisible) {
-                        hideChannelList()
-                        adapter.setSelectedPosition(previousChannelIndex) // Regresar al canal actualmente reproduciendo
-                        channelList.scrollToPosition(previousChannelIndex)
-                        return true
-                    }
                 }
             }
         }
