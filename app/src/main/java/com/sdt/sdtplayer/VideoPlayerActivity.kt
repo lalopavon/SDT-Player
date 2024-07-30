@@ -1,17 +1,18 @@
 package com.sdt.sdtplayer
 
+import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
+import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private var isChannelListVisible = false
+    private var isPasswordDialogVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -232,7 +234,11 @@ class VideoPlayerActivity : AppCompatActivity() {
                     return true
                 }
                 KeyEvent.KEYCODE_BACK -> {
-                    showExitDialog()
+                    showPasswordDialog()
+                    return true
+                }
+                KeyEvent.KEYCODE_HOME -> {
+                    showPasswordDialog()
                     return true
                 }
             }
@@ -240,22 +246,43 @@ class VideoPlayerActivity : AppCompatActivity() {
         return super.dispatchKeyEvent(event)
     }
 
-    private fun showExitDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Enter Password")
+    private fun showPasswordDialog() {
+        if (isPasswordDialogVisible) return
 
-        val input = EditText(this)
-        builder.setView(input)
+        isPasswordDialogVisible = true
+        val passwordEditText = EditText(this)
+        passwordEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
 
-        builder.setPositiveButton("OK") { dialog, _ ->
-            if (input.text.toString() == "SDT123.com") {
-                finish()
-            } else {
+        AlertDialog.Builder(this)
+            .setTitle("Enter Password")
+            .setView(passwordEditText)
+            .setPositiveButton("OK") { dialog, _ ->
+                val password = passwordEditText.text.toString()
+                if (password == "SDT123.com") {
+                    finish()
+                } else {
+                    // Show an error message or do something else if the password is incorrect
+                }
+                isPasswordDialogVisible = false
                 dialog.dismiss()
             }
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                isPasswordDialogVisible = false
 
-        builder.show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                isPasswordDialogVisible = false
+                dialog.dismiss()
+            }
+            .setOnDismissListener {
+                isPasswordDialogVisible = false
+            }
+            .show()
+    }
+
+    override fun onUserLeaveHint() {
+        // This method is called when the user presses the home button
+        showPasswordDialog()
     }
 }
