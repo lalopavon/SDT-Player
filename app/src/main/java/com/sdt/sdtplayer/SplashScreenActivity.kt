@@ -20,17 +20,17 @@ class SplashScreenActivity : AppCompatActivity() {
         val videoUri = Uri.parse("android.resource://" + packageName + "/" + R.raw.splash_video)
         videoViewSplash.setVideoURI(videoUri)
         videoViewSplash.setOnCompletionListener {
-            // Iniciar la UrlInputActivity cuando el video termine
-            val intent = Intent(this, UrlInputActivity::class.java)
+            // Iniciar VideoPlayerActivity cuando el video termine
+            val intent = Intent(this, VideoPlayerActivity::class.java)
             startActivity(intent)
             finish()
         }
         videoViewSplash.start()
 
-        // Si el video dura más de lo esperado, iniciar la UrlInputActivity después de 10 segundos como medida de seguridad
+        // Si el video dura más de lo esperado, iniciar VideoPlayerActivity después de 10 segundos como medida de seguridad
         Handler(Looper.getMainLooper()).postDelayed({
             if (!isFinishing) {
-                val intent = Intent(this, UrlInputActivity::class.java)
+                val intent = Intent(this, VideoPlayerActivity::class.java)
                 startActivity(intent)
                 finish()
             }

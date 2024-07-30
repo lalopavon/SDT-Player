@@ -1,5 +1,6 @@
 package com.sdt.sdtplayer
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,8 +8,10 @@ import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +28,11 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var channelList: RecyclerView
     private lateinit var loadingSpinner: ProgressBar
     private lateinit var topBar: View
-    private val channels = mutableListOf<String>()
+    private val channels = mutableListOf(
+        "http://live-hls-web-aje.getaj.net/AJE/01.m3u8",
+        "http://content.uplynk.com/channel/65812a0604044ab4b4e13d5911f13953.m3u8",
+        "http://content.uplynk.com/channel/5f9f805ff3c44a02929bd58dc044e94c.m3u8"
+    )
     private lateinit var adapter: UrlAdapter
     private var currentChannelIndex = 0
 
@@ -52,12 +59,16 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         setupPlayer()
         setupChannelList()
-        handleIntent()
 
         // Mostrar la guía al iniciar la actividad
         showChannelList()
         // Ocultar la guía automáticamente después de unos segundos al iniciar la actividad
         hideChannelListAfterDelay()
+
+        // Reproducir el primer canal automáticamente
+        playChannel(channels[0])
+        adapter.setSelectedPosition(0)
+        currentChannelIndex = 0
     }
 
     private fun setupPlayer() {
@@ -66,7 +77,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         playerView.resizeMode = androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
         player.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                showErrorAndReturn()
+                moveToNextChannel()
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -82,26 +93,16 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private fun setupChannelList() {
         channelList.layoutManager = LinearLayoutManager(this)
-        adapter = UrlAdapter(channels, false) { position ->
+        adapter = UrlAdapter(
+            channels.mapIndexed { index, _ -> "Canal ${index + 1}" }.toMutableList(),
+            false
+        ) { position ->
             currentChannelIndex = position
             adapter.setSelectedPosition(currentChannelIndex)
             // Desplazar la lista de canales para mantener la selección visible
             channelList.scrollToPosition(currentChannelIndex)
         }
         channelList.adapter = adapter
-    }
-
-    private fun handleIntent() {
-        val urls = intent.getStringArrayListExtra("VIDEO_URLS")
-        if (urls != null) {
-            channels.addAll(urls)
-            adapter.notifyDataSetChanged()
-            if (channels.isNotEmpty()) {
-                playChannel(channels[0])
-                adapter.setSelectedPosition(0)
-                currentChannelIndex = 0
-            }
-        }
     }
 
     private fun playChannel(url: String) {
@@ -113,14 +114,15 @@ class VideoPlayerActivity : AppCompatActivity() {
         hideChannelListAfterDelay()
     }
 
-    private fun showErrorAndReturn() {
-        loadingSpinner.visibility = View.GONE
-        player.stop()
-        val intent = Intent(this, UrlInputActivity::class.java).apply {
-            putExtra("ERROR_MESSAGE", "Failed to load video. Please check the URL and try again.")
+    private fun moveToNextChannel() {
+        currentChannelIndex = (currentChannelIndex + 1) % channels.size
+        if (currentChannelIndex == 0) {
+            // Si hemos intentado todos los canales y ninguno funciona, pausar el reproductor
+            player.pause()
+            loadingSpinner.visibility = View.GONE
+        } else {
+            playChannel(channels[currentChannelIndex])
         }
-        startActivity(intent)
-        finish()
     }
 
     private fun hideChannelListAfterDelay() {
@@ -229,8 +231,31 @@ class VideoPlayerActivity : AppCompatActivity() {
                     changeChannel(-1)
                     return true
                 }
+                KeyEvent.KEYCODE_BACK -> {
+                    showExitDialog()
+                    return true
+                }
             }
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    private fun showExitDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Enter Password")
+
+        val input = EditText(this)
+        builder.setView(input)
+
+        builder.setPositiveButton("OK") { dialog, _ ->
+            if (input.text.toString() == "SDT123.com") {
+                finish()
+            } else {
+                dialog.dismiss()
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+
+        builder.show()
     }
 }
