@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.TextView
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -15,6 +16,11 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash_screen)
 
         val videoViewSplash: VideoView = findViewById(R.id.videoViewSplash)
+        val versionTextView: TextView = findViewById(R.id.versionTextView)
+
+        // Mostrar la versión de la app
+        val versionName = BuildConfig.VERSION_NAME
+        versionTextView.text = "Version $versionName"
 
         // Configurar el VideoView para reproducir el video
         val videoUri = Uri.parse("android.resource://" + packageName + "/" + R.raw.splash_video)
@@ -25,6 +31,7 @@ class SplashScreenActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
         videoViewSplash.start()
 
         // Si el video dura más de lo esperado, iniciar VideoPlayerActivity después de 10 segundos como medida de seguridad
