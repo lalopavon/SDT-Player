@@ -237,10 +237,6 @@ class VideoPlayerActivity : AppCompatActivity() {
                     showPasswordDialog()
                     return true
                 }
-                KeyEvent.KEYCODE_HOME -> {
-                    showPasswordDialog()
-                    return true
-                }
             }
         }
         return super.dispatchKeyEvent(event)
@@ -266,7 +262,6 @@ class VideoPlayerActivity : AppCompatActivity() {
                 isPasswordDialogVisible = false
                 dialog.dismiss()
             }
-
             .setNegativeButton("Cancel") { dialog, _ ->
                 isPasswordDialogVisible = false
                 dialog.dismiss()
@@ -278,7 +273,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onUserLeaveHint() {
-        // Intercept the Home button press and show password dialog
-        showPasswordDialog()
+            // Do nothing to prevent leaving the app without the password
+        }
     }
-}
