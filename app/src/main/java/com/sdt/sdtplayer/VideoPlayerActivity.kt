@@ -261,16 +261,12 @@ class VideoPlayerActivity : AppCompatActivity() {
                 if (password == "SDT123.com") {
                     finish()
                 } else {
-                    // Show an error message or do something else if the password is incorrect
+                    // Mostrar un mensaje de error si la contraseña es incorrecta
                 }
                 isPasswordDialogVisible = false
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                isPasswordDialogVisible = false
 
-                dialog.dismiss()
-            }
             .setNegativeButton("Cancel") { dialog, _ ->
                 isPasswordDialogVisible = false
                 dialog.dismiss()
@@ -282,7 +278,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onUserLeaveHint() {
-        // This method is called when the user presses the home button
+        // Intercept the Home button press and show password dialog
         showPasswordDialog()
     }
 }
