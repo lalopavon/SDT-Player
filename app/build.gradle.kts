@@ -13,7 +13,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "VERSION_NAME", "\"1.0\"") // Asegúrate de agregar esta línea
+        buildConfigField("String", "VERSION_NAME", "\"1.0\"")
     }
 
     buildFeatures {

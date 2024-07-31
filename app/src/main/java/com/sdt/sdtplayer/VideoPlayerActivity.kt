@@ -45,8 +45,19 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var isChannelListVisible = false
     private var isPasswordDialogVisible = false
 
+    companion object {
+        private var isActivityRunning = false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (isActivityRunning) {
+            finish()
+            return
+        }
+        isActivityRunning = true
+
         setContentView(R.layout.activity_video_player)
 
         playerView = findViewById(R.id.player_view)
@@ -54,7 +65,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         loadingSpinner = findViewById(R.id.loading_spinner)
         topBar = findViewById(R.id.top_bar)
 
-        // Ocultar la barra superior después de 5 segundos
         Handler(Looper.getMainLooper()).postDelayed({
             topBar.visibility = View.GONE
         }, 5000)
@@ -62,12 +72,9 @@ class VideoPlayerActivity : AppCompatActivity() {
         setupPlayer()
         setupChannelList()
 
-        // Mostrar la guía al iniciar la actividad
         showChannelList()
-        // Ocultar la guía automáticamente después de unos segundos al iniciar la actividad
         hideChannelListAfterDelay()
 
-        // Reproducir el primer canal automáticamente
         playChannel(channels[0])
         adapter.setSelectedPosition(0)
         currentChannelIndex = 0
@@ -101,7 +108,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         ) { position ->
             currentChannelIndex = position
             adapter.setSelectedPosition(currentChannelIndex)
-            // Desplazar la lista de canales para mantener la selección visible
             channelList.scrollToPosition(currentChannelIndex)
         }
         channelList.adapter = adapter
@@ -119,7 +125,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun moveToNextChannel() {
         currentChannelIndex = (currentChannelIndex + 1) % channels.size
         if (currentChannelIndex == 0) {
-            // Si hemos intentado todos los canales y ninguno funciona, pausar el reproductor
             player.pause()
             loadingSpinner.visibility = View.GONE
         } else {
@@ -145,7 +150,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 weight = 1f
             }
         }
-        hideChannelListAfterDelay() // Ocultar la guía después de unos segundos
+        hideChannelListAfterDelay()
     }
 
     private fun hideChannelList() {
@@ -174,7 +179,10 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        player.release()
+        isActivityRunning = false
+        if (::player.isInitialized) {
+            player.release()
+        }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -182,54 +190,44 @@ class VideoPlayerActivity : AppCompatActivity() {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
                     if (isChannelListVisible) {
-                        // Reproducir el canal seleccionado
                         playChannel(channels[adapter.getSelectedPosition()])
                         hideChannelList()
                     } else {
-                        // Mostrar la guía de programación
                         showChannelList()
                     }
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    // Rebobinar 10 segundos
                     player.seekTo(player.currentPosition - 10000)
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    // Adelantar 10 segundos
                     player.seekTo(player.currentPosition + 10000)
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_UP -> {
                     if (isChannelListVisible) {
-                        // Navegar hacia arriba en la lista de canales
                         adapter.setSelectedPosition((adapter.getSelectedPosition() - 1 + channels.size) % channels.size)
                         channelList.scrollToPosition(adapter.getSelectedPosition())
                     } else {
-                        // Cambiar al canal anterior
                         changeChannel(-1)
                     }
                     return true
                 }
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
                     if (isChannelListVisible) {
-                        // Navegar hacia abajo en la lista de canales
                         adapter.setSelectedPosition((adapter.getSelectedPosition() + 1) % channels.size)
                         channelList.scrollToPosition(adapter.getSelectedPosition())
                     } else {
-                        // Cambiar al siguiente canal
                         changeChannel(1)
                     }
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_UP -> {
-                    // Cambiar al siguiente canal
                     changeChannel(1)
                     return true
                 }
                 KeyEvent.KEYCODE_CHANNEL_DOWN -> {
-                    // Cambiar al canal anterior
                     changeChannel(-1)
                     return true
                 }
@@ -273,6 +271,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onUserLeaveHint() {
-            // Do nothing to prevent leaving the app without the password
-        }
+        // Do nothing to prevent leaving the app without the password
     }
+}
