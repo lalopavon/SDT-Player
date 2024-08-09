@@ -32,28 +32,12 @@
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
-
-        <androidx.media3.ui.PlayerView
-            android:id="@+id/player_view"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:background="#000000"
-            app:resize_mode="fit" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/channel_list"
-            android:layout_width="200dp"
-            android:layout_height="match_parent"
-            android:background="@color/sdt_blue"
-            android:padding="8dp" />
-    </LinearLayout>
+        android:background="#000000"
+        app:resize_mode="fit" />
 
     <ProgressBar
         android:id="@+id/loading_spinner"
