@@ -2,7 +2,7 @@ package com.sdt.sdtplayer
 
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View // Asegúrate de importar View
+import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
@@ -89,6 +89,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                     changeChannel(-1)
                     return true
                 }
+                KeyEvent.KEYCODE_BACK -> {
+                    finish()
+                    return true
+                }
             }
         }
         return super.dispatchKeyEvent(event)
@@ -97,5 +101,10 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun changeChannel(increment: Int) {
         currentChannelIndex = (currentChannelIndex + increment + channels.size) % channels.size
         playChannel(channels[currentChannelIndex])
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        finish() // Cierra la aplicación cuando se presiona el botón de inicio
     }
 }
