@@ -2,7 +2,7 @@ package com.sdt.sdtplayer
 
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
+import android.view.View // Asegúrate de importar View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
@@ -29,6 +29,9 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         playerView = findViewById(R.id.player_view)
         loadingSpinner = findViewById(R.id.loading_spinner)
+
+        // Mantener la pantalla encendida
+        playerView.keepScreenOn = true
 
         setupPlayer()
 
@@ -65,12 +68,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private fun moveToNextChannel() {
         currentChannelIndex = (currentChannelIndex + 1) % channels.size
-        if (currentChannelIndex == 0) {
-            player.pause()
-            loadingSpinner.visibility = View.GONE
-        } else {
-            playChannel(channels[currentChannelIndex])
-        }
+        playChannel(channels[currentChannelIndex])
     }
 
     override fun onDestroy() {
@@ -81,28 +79,14 @@ class VideoPlayerActivity : AppCompatActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (event.keyCode) {
-                KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    // Rebobinar 10 segundos
-                    player.seekTo(player.currentPosition - 10000)
-                    return true
-                }
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    // Adelantar 10 segundos
-                    player.seekTo(player.currentPosition + 10000)
-                    return true
-                }
-                KeyEvent.KEYCODE_CHANNEL_UP, KeyEvent.KEYCODE_DPAD_UP -> {
+                KeyEvent.KEYCODE_CHANNEL_UP -> {
                     // Cambiar al siguiente canal
                     changeChannel(1)
                     return true
                 }
-                KeyEvent.KEYCODE_CHANNEL_DOWN, KeyEvent.KEYCODE_DPAD_DOWN -> {
+                KeyEvent.KEYCODE_CHANNEL_DOWN -> {
                     // Cambiar al canal anterior
                     changeChannel(-1)
-                    return true
-                }
-                KeyEvent.KEYCODE_BACK -> {
-                    finish()
                     return true
                 }
             }
