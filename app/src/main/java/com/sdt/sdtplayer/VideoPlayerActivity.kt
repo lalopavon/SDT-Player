@@ -134,12 +134,12 @@ class VideoPlayerActivity : AppCompatActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (event.keyCode) {
-                KeyEvent.KEYCODE_CHANNEL_UP -> {
+                KeyEvent.KEYCODE_CHANNEL_UP, KeyEvent.KEYCODE_DPAD_UP -> {
                     // Cambiar al siguiente canal
                     changeChannel(1)
                     return true
                 }
-                KeyEvent.KEYCODE_CHANNEL_DOWN -> {
+                KeyEvent.KEYCODE_CHANNEL_DOWN, KeyEvent.KEYCODE_DPAD_DOWN -> {
                     // Cambiar al canal anterior
                     changeChannel(-1)
                     return true
