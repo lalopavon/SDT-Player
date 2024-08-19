@@ -29,7 +29,8 @@
             android:banner="@drawable/sdt_transparente"
             android:exported="true"
             android:icon="@drawable/sdt_transparente"
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -37,16 +38,15 @@
         </activity>
 
         <activity
-            android:name=".UrlInputActivity"
-            android:banner="@drawable/sdt_transparente"
-            android:exported="true"
-            android:icon="@drawable/sdt_transparente"
-            android:screenOrientation="landscape"/>
-
-        <activity
             android:name=".VideoPlayerActivity"
-            android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
     </application>
 
